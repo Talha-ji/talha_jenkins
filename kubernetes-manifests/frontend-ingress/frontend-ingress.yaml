@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: talhasghar.site
+    - host: frontend.talhasghar.site
       http:
         paths:
           - path: /
