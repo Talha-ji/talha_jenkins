@@ -1,26 +1,22 @@
-# frontend-service.yaml
-apiVersion: v1
-kind: Service
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: frontend
+  name: frontend-ingress
   namespace: three-tier
   annotations:
-    # Preserve your existing ALB
-    service.beta.kubernetes.io/aws-load-balancer-name: "k8s-threetie-frontend-d6553a0450"
-    # Ensure it uses the same ALB settings
-    service.beta.kubernetes.io/aws-load-balancer-type: "alb"
-    service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
-    # Add external-dns annotation if you want automatic DNS updates
-    external-dns.alpha.kubernetes.io/hostname: "frontend.talhasghar.site"
-  labels:
-    app.kubernetes.io/instance: frontend
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
 spec:
-  type: LoadBalancer
-  ports:
-  - name: http
-    port: 80
-    targetPort: 3000
-    protocol: TCP
-  selector:
-    role: frontend
+  ingressClassName: alb
+  rules:
+    - host: frontend.talhasghar.site
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 3000
